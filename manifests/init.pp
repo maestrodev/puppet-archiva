@@ -24,11 +24,13 @@ class archiva {
     path    => ["/bin",],
   } ->
   file { "$archiva_home/archiva":
-    ensure  => "$archiva_home/apache-archiva-$archiva_version",
+    ensure  => link,
+    target  => "$archiva_home/apache-archiva-$archiva_version",
     require => Exec["archiva_untar"],
   } ->
   file { "$archiva_home/archiva/bin/linux":
-    ensure  => "$archiva_home/archiva/bin/linux-x86-64",
+    ensure  => link,
+    target  => "$archiva_home/archiva/bin/linux-x86-64",
     require => File["$archiva_home/archiva"],
   } ->
   file { "$archiva_home/archiva/bin/wrapper-linux-x86-32":
@@ -38,7 +40,8 @@ class archiva {
   	ensure => absent,
   } ->
   file { "/etc/init.d/archiva":
-    ensure  => "$archiva_home/archiva/bin/archiva",
+    ensure  => link,
+    target  => "$archiva_home/archiva/bin/archiva",
   } ->
   service { "archiva":
     name => "archiva",

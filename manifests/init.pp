@@ -102,10 +102,10 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     wget::fetch { "jdbc_driver_download":
       source => "$jdbc_driver_url",
       destination => "$installdir/lib/$filename",
-    }
+    } ->
     exec { "jdbc_driver_append":
-      command => "sed -i 's#wrapper.java.classpath.14=.*#wrapper.java.classpath.14=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
-      unless => "grep $filename $installdir/conf/wrapper.conf",
+      command => "sed -i 's#^wrapper.java.classpath.14=.*$#wrapper.java.classpath.14=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
+      unless => "grep 'wrapper.java.classpath.14=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
       notify => Service[$service],
     }
   }
@@ -123,7 +123,7 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     ensure => directory,
     require => Exec["archiva_untar"],
   } ->
-  file { "$home/conf/wrapper.conf": ensure => present, source => "$installdir/conf/wrapper.conf", } ->
+  file { "$home/conf/wrapper.conf": ensure => link, target => "$installdir/conf/wrapper.conf", } ->
   file { "$home/conf/shared.xml": ensure  => present, source => "$installdir/conf/shared.xml", } ->
   file { "$home/conf/jetty.xml": 
     ensure  => present,

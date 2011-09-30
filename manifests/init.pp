@@ -12,53 +12,81 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class archiva {
-  #wget it
+class archiva($version, $user = "archiva", $group = "archiva", $service =
+  "archiva", $installroot = "/usr/local", $home = "/var/local/archiva", 
+  $apache_mirror = "http://archive.apache.org/dist/") {
+
+  # wget from https://github.com/maestrodev/puppet-wget
   include wget
 
-  user { "$archiva_user":
+  File { owner => $user, group => $group, mode => "0600" }
+
+  $installdir = "$installroot/apache-archiva-$version"
+  $archive = "/usr/local/src/apache-archiva-${version}-bin.tar.gz"
+
+  user { "$user":
     ensure     => present,
-    home       => "$archiva_home/$archiva_user",
+    home       => "$home",
     managehome => false,
-    shell      => "/bin/false",
-  } ->
-  group { "$archiva_group":
+    system     => true,
+  }
+  group { "$group":
     ensure  => present,
-    require => User["$archiva_user"],
-  } ->
+    require => User["$user"],
+  }
   wget::fetch { "archiva_download":
-    source => "http://mirror.cc.columbia.edu/pub/software/apache//archiva/binaries/apache-archiva-${archiva_version}-bin.tar.gz",
-    destination => "/usr/local/src/apache-archiva-${archiva_version}-bin.tar.gz",
-    require => [Group["$archiva_group"],Package["java-1.6.0-openjdk-devel"]],
+    source => "$apache_mirror/archiva/binaries/apache-archiva-${version}-bin.tar.gz",
+    destination => $archive,
   } ->
   exec { "archiva_untar":
-    command => "tar xf /usr/local/src/apache-archiva-${archiva_version}-bin.tar.gz && chown -R $archiva_user:$archiva_group $archiva_home/apache-archiva-$archiva_version",
-    cwd     => "$archiva_home",
-    creates => "$archiva_home/apache-archiva-$archiva_version",
+    command => "tar zxf $archive",
+    cwd     => "$installroot",
+    creates => "$installdir",
     path    => ["/bin",],
+    notify  => Service["archiva"],
   } ->
-  file { "$archiva_home/archiva":
+  file { "$installroot/$service":
     ensure  => link,
-    target  => "$archiva_home/apache-archiva-$archiva_version",
+    target  => "$installdir",
+  }
+  if $::architecture == "x86_64" {
+    file { "$installdir/bin/wrapper-linux-x86-32":
+      ensure => absent,
+      require => Exec["archiva_untar"],
+    }
+    file { "$installdir/lib/libwrapper-linux-x86-32.so":
+      ensure => absent,
+      require => Exec["archiva_untar"],
+    }
+  }
+  file { "$home":
+    ensure => directory,
+    recurse => true,
+  } ->
+  file { "$home/tmp":
+    ensure => directory,
+  } ->
+  file { "$home/logs":
+    ensure => directory,
+  } ->
+  file { "$home/conf":
+    ensure => directory,
+  } ->
+  file { "$home/conf/wrapper.conf": ensure => present, source => "$installdir/conf/wrapper.conf", } ->
+  file { "$home/conf/shared.xml": ensure  => present, source => "$installdir/conf/shared.xml", } ->
+  file { "$home/conf/jetty.xml": ensure  => present, source => "$installdir/conf/jetty.xml", } ->
+  file { "/etc/profile.d/archiva.sh":
+    owner   => "root",
+    mode    => "0755",
+    content => "export ARCHIVA_BASE=$home\n",
+  } ->
+  file { "/etc/init.d/$service":
+    owner   => "root",
+    mode    => "0755",
+    content => template("archiva/archiva.erb"),
     require => Exec["archiva_untar"],
   } ->
-  file { "$archiva_home/archiva/bin/linux":
-    ensure  => link,
-    target  => "$archiva_home/archiva/bin/linux-x86-64",
-    require => File["$archiva_home/archiva"],
-  } ->
-  file { "$archiva_home/archiva/bin/wrapper-linux-x86-32":
-    ensure => absent,
-  } ->
-  file { "$archiva_home/archiva/lib/libwrapper-linux-x86-32.so":
-    ensure => absent,
-  } ->
-  file { "/etc/init.d/archiva":
-    ensure  => link,
-    target  => "$archiva_home/archiva/bin/archiva",
-  } ->
-  service { "archiva":
-    name => "archiva",
+  service { $service:
     ensure => running,
     hasrestart => true,
     hasstatus => true,

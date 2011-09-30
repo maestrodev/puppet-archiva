@@ -104,8 +104,9 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
       destination => "$installdir/lib/$filename",
     }
     exec { "jdbc_driver_append":
-      command => "sed -i 's#wrapper.java.classpath.14=.*#wrapper.java.classpath.14=%REPO_DIR/$filename#' $installdir/conf/wrapper.conf",
+      command => "sed -i 's#wrapper.java.classpath.14=.*#wrapper.java.classpath.14=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
       unless => "grep $filename $installdir/conf/wrapper.conf",
+      notify => Service[$service],
     }
   }
   file { "$home":
@@ -149,6 +150,6 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     hasrestart => true,
     hasstatus => true,
     enable => true,
-    require => Wget::Fetch["jdbc_driver_download"],
+    require => [Wget::Fetch["jdbc_driver_download"],Exec["jdbc_driver_append"]],
   }
 }

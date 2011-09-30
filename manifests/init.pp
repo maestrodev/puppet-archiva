@@ -40,12 +40,14 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     driver => "org.apache.derby.jdbc.EmbeddedDriver",
     username => "sa",
     password => "",
-  }) {
+  },
+  $jdbc_driver_url = "") {
 
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
 
   File { owner => $user, group => $group, mode => "0644" }
+  Exec { path => "/bin" }
 
   $installdir = "$installroot/apache-archiva-$version"
   $archive = "/usr/local/src/apache-archiva-${version}-bin.tar.gz"
@@ -79,8 +81,7 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     command => "tar zxf $archive",
     cwd     => "$installroot",
     creates => "$installdir",
-    path    => ["/bin",],
-    notify  => Service[$service],
+    notify  => [Service[$service],Wget::Fetch["jdbc_driver_download"]],
   } ->
   file { "$installroot/$service":
     ensure  => link,
@@ -94,6 +95,17 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     file { "$installdir/lib/libwrapper-linux-x86-32.so":
       ensure => absent,
       require => Exec["archiva_untar"],
+    }
+  }
+  if $jdbc_driver_url != "" {
+    $filename = regsubst("$jdbc_driver_url","^.*/", "")
+    wget::fetch { "jdbc_driver_download":
+      source => "$jdbc_driver_url",
+      destination => "$installdir/lib/$filename",
+    }
+    exec { "jdbc_driver_append":
+      command => "sed -i 's#wrapper.java.classpath.14=.*#wrapper.java.classpath.14=%REPO_DIR/$filename#' $installdir/conf/wrapper.conf",
+      unless => "grep $filename $installdir/conf/wrapper.conf",
     }
   }
   file { "$home":
@@ -137,5 +149,6 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     hasrestart => true,
     hasstatus => true,
     enable => true,
+    require => Wget::Fetch["jdbc_driver_download"],
   }
 }

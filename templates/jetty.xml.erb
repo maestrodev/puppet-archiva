@@ -312,7 +312,6 @@
 
   <!-- Users / Security Database -->
   
-<% if ldap.empty? %>
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
@@ -337,6 +336,5 @@
       </New>
     </Arg>
   </New>
-<% end %>
 <% end %>
 </Configure>

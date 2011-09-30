@@ -15,16 +15,29 @@
 class archiva($version, $user = "archiva", $group = "archiva", $service =
   "archiva", $installroot = "/usr/local", $home = "/var/local/archiva", 
   $apache_mirror = "http://archive.apache.org/dist/", $port = "8080",
-  $ldap = {}, 
+  $application_url = "http://localhost:8080/archiva",
+  $mail_from = {
+    #name => "Apache Archiva",
+    #address => "archiva@example.com",
+  },
+  $ldap = {
+    #hostname => "",
+    #ssl => true,
+    #port => "636",
+    #dn => "",
+    #bind_dn => "",
+    #bind_password => "",
+    #admin_user => "root",
+  }, 
   $archiva_jdbc = {
-    url => "jdbc:derby:/var/local/archiva/data/databases/archiva?create=true",
-    driver => "org.apache.derby.jdbc.EmbeddedDataSource",
+    url => "jdbc:derby:/var/local/archiva/data/databases/archiva;create=true",
+    driver => "org.apache.derby.jdbc.EmbeddedDriver",
     username => "sa",
     password => "",
   },
   $users_jdbc = {
-    url => "jdbc:derby:/var/local/archiva/data/databases/users?create=true",
-    driver => "org.apache.derby.jdbc.EmbeddedDataSource",
+    url => "jdbc:derby:/var/local/archiva/data/databases/users;create=true",
+    driver => "org.apache.derby.jdbc.EmbeddedDriver",
     username => "sa",
     password => "",
   }) {
@@ -32,20 +45,20 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
 
-  File { owner => $user, group => $group, mode => "0600" }
+  File { owner => $user, group => $group, mode => "0644" }
 
   $installdir = "$installroot/apache-archiva-$version"
   $archive = "/usr/local/src/apache-archiva-${version}-bin.tar.gz"
 
   # Derby specifics
-  if $archiva_jdbc['driver'] == "org.apache.derby.jdbc.EmbeddedDataSource" {
-    $archiva_u = regsubst($archiva_jdbc['url'],"\\?.*$", "")
-    $archiva_jdbc['shutdown_url'] = "$archiva_u?shutdown=true"
+  if $archiva_jdbc['driver'] == "org.apache.derby.jdbc.EmbeddedDriver" {
+    $archiva_u = regsubst($archiva_jdbc['url'],";.*$", "")
+    $archiva_jdbc['shutdown_url'] = "$archiva_u;shutdown=true"
   }
 
-  if $users_jdbc['driver'] == "org.apache.derby.jdbc.EmbeddedDataSource" {
-    $users_u = regsubst($users_jdbc['url'],"\\?.*$", "")
-    $users_jdbc['shutdown_url'] = "$users_u?shutdown=true"
+  if $users_jdbc['driver'] == "org.apache.derby.jdbc.EmbeddedDriver" {
+    $users_u = regsubst($users_jdbc['url'],";.*$", "")
+    $users_jdbc['shutdown_url'] = "$users_u;shutdown=true"
   }
 
   user { "$user":
@@ -102,6 +115,11 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
   file { "$home/conf/jetty.xml": 
     ensure  => present,
     content => template("archiva/jetty.xml.erb"),
+    notify  => Service[$service],
+  } ->
+  file { "$home/conf/security.properties": 
+    ensure  => present,
+    content => template("archiva/security.properties.erb"),
     notify  => Service[$service],
   } ->
   file { "/etc/profile.d/archiva.sh":

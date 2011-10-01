@@ -14,8 +14,13 @@
 
 class archiva($version, $user = "archiva", $group = "archiva", $service =
   "archiva", $installroot = "/usr/local", $home = "/var/local/archiva", 
-  $apache_mirror = "http://archive.apache.org/dist/", $port = "8080",
-  $application_url = "http://localhost:8080/archiva",
+  $apache_mirror = "http://archive.apache.org/dist/", 
+  $repo = {
+    #url = "http://repo1.maven.org/maven2",
+    #username = "",
+    #password = "",
+  },
+  $port = "8080", $application_url = "http://localhost:8080/archiva",
   $mail_from = {
     #name => "Apache Archiva",
     #address => "archiva@example.com",
@@ -73,15 +78,28 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     ensure  => present,
     require => User["$user"],
   }
-  wget::fetch { "archiva_download":
-    source => "$apache_mirror/archiva/binaries/apache-archiva-${version}-bin.tar.gz",
-    destination => $archive,
-  } ->
+  if "x${repo['url']}x" != "xx" {
+    $password = $repo['password']
+    file { "/root/.wgetrc":
+      content => "password=$password",
+    } ->
+    wget::authfetch { "archiva_download":
+      source => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
+      destination => $archive,
+      user => $repo['username'],
+    } -> file { $archive: ensure => present } # Used for ordering with untar
+  } else {
+    wget::fetch { "archiva_download":
+      source => "$apache_mirror/archiva/binaries/apache-archiva-${version}-bin.tar.gz",
+      destination => $archive,
+    } -> file { $archive: ensure => present } # Used for ordering with untar
+  }
   exec { "archiva_untar":
     command => "tar zxf $archive",
     cwd     => "$installroot",
     creates => "$installdir",
-    notify  => [Service[$service],Wget::Fetch["jdbc_driver_download"]],
+    notify  => Service[$service],
+    require => File[$archive],
   } ->
   file { "$installroot/$service":
     ensure  => link,
@@ -150,6 +168,5 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     hasrestart => true,
     hasstatus => true,
     enable => true,
-    require => [Wget::Fetch["jdbc_driver_download"],Exec["jdbc_driver_append"]],
   }
 }

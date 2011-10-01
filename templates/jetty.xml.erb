@@ -284,6 +284,7 @@
     </Arg>
   </New>
 
+<% if version < "1.4" %>
   <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/archiva</Arg>
     <Arg>
@@ -308,6 +309,7 @@
       </New>
     </Arg>
   </New>
+<% end %>
 <% end %>
 
   <!-- Users / Security Database -->

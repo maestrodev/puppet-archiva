@@ -79,14 +79,11 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     require => User["$user"],
   }
   if "x${repo['url']}x" != "xx" {
-    $password = $repo['password']
-    file { "/root/.wgetrc":
-      content => "password=$password",
-    } ->
     wget::authfetch { "archiva_download":
       source => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
       destination => $archive,
       user => $repo['username'],
+      password => $repo['password'],
     } -> file { $archive: ensure => present } # Used for ordering with untar
   } else {
     wget::fetch { "archiva_download":

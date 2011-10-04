@@ -84,19 +84,20 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
       destination => $archive,
       user => $repo['username'],
       password => $repo['password'],
-    } -> file { $archive: ensure => present } # Used for ordering with untar
+      notify => Exec["archiva_untar"],
+    }
   } else {
     wget::fetch { "archiva_download":
       source => "$apache_mirror/archiva/binaries/apache-archiva-${version}-bin.tar.gz",
       destination => $archive,
-    } -> file { $archive: ensure => present } # Used for ordering with untar
+      notify => Exec["archiva_untar"],
+    }
   }
   exec { "archiva_untar":
     command => "tar zxf $archive",
     cwd     => "$installroot",
     creates => "$installdir",
     notify  => Service[$service],
-    require => File[$archive],
   } ->
   file { "$installroot/$service":
     ensure  => link,

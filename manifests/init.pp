@@ -125,9 +125,6 @@ class archiva($version, $user = "archiva", $group = "archiva",
     creates => "$installdir",
     notify  => Service[$service],
   } ->
-  file { "$installdir/conf/wrapper.conf.orig":
-    source  => "$installdir/conf/wrapper.conf"
-  } ->
   file { "$installroot/$service":
     ensure  => link,
     target  => "$installdir",
@@ -149,10 +146,9 @@ class archiva($version, $user = "archiva", $group = "archiva",
       destination => "$installdir/lib/$filename",
     } ->
     exec { "jdbc_driver_append":
-      command => "cat $installdir/conf/wrapper.conf.orig | sed 's#=%REPO_DIR%/derby.*$#=%REPODIR%/$filename#' >$installdir/conf/wrapper.conf",
-      unless => "grep '=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
+      command => "cat $installdir/conf/wrapper.conf | sed 's#=%REPO_DIR%/derby.*$#=%REPODIR%/$filename#' >$home/conf/wrapper.conf",
+      unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],
-      require => File["$installdir/conf/wrapper.conf.orig"],
     }
   }
   file { "$home":

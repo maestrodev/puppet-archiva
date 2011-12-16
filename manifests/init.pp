@@ -156,6 +156,9 @@ class archiva($version, $user = "archiva", $group = "archiva",
   file { "$home":
     ensure => directory,
   } ->
+  file { "$home/temp":
+    ensure => directory,
+  } ->
   file { "$home/tmp":
     ensure => directory,
   } ->

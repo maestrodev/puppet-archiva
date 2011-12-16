@@ -151,7 +151,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],
       require => [File["$home/conf"],Exec["archiva_untar"]],
-      creates => File["$home/conf/wrapper.conf"],
+      creates => "$home/conf/wrapper.conf",
     }
   } else {
     file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" }

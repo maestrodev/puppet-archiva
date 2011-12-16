@@ -84,11 +84,11 @@ class archiva($version, $user = "archiva", $group = "archiva",
         managehome => false,
       }
     }
-  }
 
-  group { "$group":
-    ensure  => present,
-    require => User["$user"],
+    group { "$group":
+      ensure  => present,
+      require => User["$user"],
+    }
   }
   if "x${repo['url']}x" != "xx" {
     if "x${repo['username']}x" != "xx" {

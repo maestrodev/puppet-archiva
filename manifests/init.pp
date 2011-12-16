@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class archiva($version, $user = "archiva", $group = "archiva", $service =
-  "archiva", $installroot = "/usr/local", $home = "/var/local/archiva", 
+class archiva($version, $user = "archiva", $group = "archiva", 
+  $manage_user = true, $service = "archiva", $installroot = "/usr/local", 
+  $home = "/var/local/archiva", 
   $apache_mirror = "http://archive.apache.org/dist/", 
   $repo = {
     #url = "http://repo1.maven.org/maven2",
@@ -68,18 +69,20 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     $users_jdbc['shutdown_url'] = "$users_u;shutdown=true"
   }
 
-  if $::puppetversion >= "2.7.0" {
-    user { "$user":
-      ensure     => present,
-      home       => "$home",
-      managehome => false,
-      system     => true,
-    }
-  } else {
-    user { "$user":
-      ensure     => present,
-      home       => "$home",
-      managehome => false,
+  if $manage_user {
+    if $::puppetversion >= "2.7.0" {
+      user { "$user":
+        ensure     => present,
+        home       => "$home",
+        managehome => false,
+        system     => true,
+      }
+    } else {
+      user { "$user":
+        ensure     => present,
+        home       => "$home",
+        managehome => false,
+      }
     }
   }
 

@@ -68,12 +68,21 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     $users_jdbc['shutdown_url'] = "$users_u;shutdown=true"
   }
 
-  user { "$user":
-    ensure     => present,
-    home       => "$home",
-    managehome => false,
-    system     => true,
+  if $::puppetversion >= "2.7.0" {
+    user { "$user":
+      ensure     => present,
+      home       => "$home",
+      managehome => false,
+      system     => true,
+    }
+  } else {
+    user { "$user":
+      ensure     => present,
+      home       => "$home",
+      managehome => false,
+    }
   }
+
   group { "$group":
     ensure  => present,
     require => User["$user"],

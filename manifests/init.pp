@@ -146,12 +146,12 @@ class archiva($version, $user = "archiva", $group = "archiva",
       destination => "$installdir/lib/$filename",
       require => Exec["archiva_untar"],
     } ->
+    file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" } ->
     exec { "jdbc_driver_append":
-      command => "cat $installdir/conf/wrapper.conf | sed 's#=%REPO_DIR%/derby.*$#=%REPO_DIR%/$filename#' >$home/conf/wrapper.conf",
+      command => "sed -i 's#=%REPO_DIR%/derby.*$#=%REPO_DIR%/$filename#' $home/conf/wrapper.conf",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],
       require => [File["$home/conf"],Exec["archiva_untar"]],
-      creates => "$home/conf/wrapper.conf",
     }
   } else {
     file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" }

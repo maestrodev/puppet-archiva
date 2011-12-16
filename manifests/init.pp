@@ -146,8 +146,8 @@ class archiva($version, $user = "archiva", $group = "archiva",
       destination => "$installdir/lib/$filename",
     } ->
     exec { "jdbc_driver_append":
-      command => "sed -i 's#^wrapper.java.classpath.14=.*$#wrapper.java.classpath.14=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
-      unless => "grep 'wrapper.java.classpath.14=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
+      command => "sed -i 's#^wrapper.java.classpath.99=.*$#wrapper.java.classpath.99=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
+      unless => "grep 'wrapper.java.classpath.99=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
       notify => Service[$service],
     }
   }

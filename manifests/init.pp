@@ -151,8 +151,19 @@ class archiva($version, $user = "archiva", $group = "archiva",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],
       require => [File["$home/conf"],Exec["archiva_untar"]],
+      creates => File["$home/conf/wrapper.conf"],
     }
+  } else {
+    file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" }
   }
+  if $version == "1.4-M2" {
+    exec { "fix_tmpdir_14M2":
+      command => "sed -i 's#java.io.tmpdir=./temp#java.io.tmpdir=%ARCHIVA_BASE%/tmp#' $home/conf/wrapper.conf",
+      unless => "grep 'java.io.tmpdir=%ARCHIVA_BASE%/tmp' $home/conf/wrapper.conf",
+      notify => Service[$service],
+      require => File["$home/conf/wrapper.conf"],
+    }
+  } 
   file { "$home":
     ensure => directory,
   } ->

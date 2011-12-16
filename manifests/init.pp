@@ -149,6 +149,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
       command => "cat $installdir/conf/wrapper.conf | sed 's#=%REPO_DIR%/derby.*$#=%REPODIR%/$filename#' >$home/conf/wrapper.conf",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],
+      require => [File["$home/conf"],Exec["archiva_untar"]],
     }
   }
   file { "$home":
@@ -164,7 +165,6 @@ class archiva($version, $user = "archiva", $group = "archiva",
     ensure => directory,
     require => Exec["archiva_untar"],
   } ->
-  file { "$home/conf/wrapper.conf": ensure => link, target => "$installdir/conf/wrapper.conf", } ->
   file { "$home/conf/shared.xml": ensure  => present, source => "$installdir/conf/shared.xml", } ->
   file { "$home/conf/jetty.xml": 
     ensure  => present,

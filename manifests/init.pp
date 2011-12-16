@@ -147,7 +147,6 @@ class archiva($version, $user = "archiva", $group = "archiva",
   }
   file { "$home":
     ensure => directory,
-    recurse => true,
   } ->
   file { "$home/tmp":
     ensure => directory,

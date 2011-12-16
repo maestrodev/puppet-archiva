@@ -21,7 +21,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
     #username = "",
     #password = "",
   },
-  $port = "8080", $application_url = "http://localhost:8080/archiva",
+  $port = "8080", $application_url = "http://localhost:8080/archiva/",
   $mail_from = {
     #name => "Apache Archiva",
     #address => "archiva@example.com",

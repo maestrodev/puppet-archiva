@@ -147,7 +147,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
       require => Exec["archiva_untar"],
     } ->
     exec { "jdbc_driver_append":
-      command => "cat $installdir/conf/wrapper.conf | sed 's#=%REPO_DIR%/derby.*$#=%REPODIR%/$filename#' >$home/conf/wrapper.conf",
+      command => "cat $installdir/conf/wrapper.conf | sed 's#=%REPO_DIR%/derby.*$#=%REPO_DIR%/$filename#' >$home/conf/wrapper.conf",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],
       require => [File["$home/conf"],Exec["archiva_untar"]],

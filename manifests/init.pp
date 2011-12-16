@@ -144,6 +144,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
     wget::fetch { "jdbc_driver_download":
       source => "$jdbc_driver_url",
       destination => "$installdir/lib/$filename",
+      require => Exec["archiva_untar"],
     } ->
     exec { "jdbc_driver_append":
       command => "cat $installdir/conf/wrapper.conf | sed 's#=%REPO_DIR%/derby.*$#=%REPODIR%/$filename#' >$home/conf/wrapper.conf",

@@ -79,12 +79,20 @@ class archiva($version, $user = "archiva", $group = "archiva", $service =
     require => User["$user"],
   }
   if "x${repo['url']}x" != "xx" {
-    wget::authfetch { "archiva_download":
-      source => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
-      destination => $archive,
-      user => $repo['username'],
-      password => $repo['password'],
-      notify => Exec["archiva_untar"],
+    if "x${repo['username']}x" != "xx" {
+      wget::authfetch { "archiva_download":
+        source => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
+        destination => $archive,
+        user => $repo['username'],
+        password => $repo['password'],
+        notify => Exec["archiva_untar"],
+      }
+    } else {
+      wget::fetch { "archiva_download":
+        source => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
+        destination => $archive,
+        notify => Exec["archiva_untar"],
+      }
     }
   } else {
     wget::fetch { "archiva_download":

@@ -141,13 +141,13 @@ class archiva($version, $user = "archiva", $group = "archiva",
   }
   if $jdbc_driver_url != "" {
     $filename = regsubst("$jdbc_driver_url","^.*/", "")
-    wget::fetch { "jdbc_driver_download":
+    wget::fetch { "archiva_jdbc_driver_download":
       source => "$jdbc_driver_url",
       destination => "$installdir/lib/$filename",
       require => Exec["archiva_untar"],
     } ->
     file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" } ->
-    exec { "jdbc_driver_append":
+    exec { "archiva_jdbc_driver_append":
       command => "sed -i 's#=%REPO_DIR%/derby.*$#=%REPO_DIR%/$filename#' $home/conf/wrapper.conf",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
       notify => Service[$service],

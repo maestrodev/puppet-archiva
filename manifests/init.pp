@@ -146,7 +146,10 @@ class archiva($version, $user = "archiva", $group = "archiva",
       destination => "$installdir/lib/$filename",
       require => Exec["archiva_untar"],
     } ->
-    file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" } ->
+    file { "${home}/conf/wrapper.conf":
+      ensure  => link,
+      target  => "${installdir}/conf/wrapper.conf",
+    } ->
     exec { "archiva_jdbc_driver_append":
       command => "sed -i 's#=%REPO_DIR%/derby.*$#=%REPO_DIR%/$filename#' $home/conf/wrapper.conf",
       unless => "grep '=%REPO_DIR%/$filename' $home/conf/wrapper.conf",
@@ -154,7 +157,10 @@ class archiva($version, $user = "archiva", $group = "archiva",
       require => [File["$home/conf"],Exec["archiva_untar"]],
     }
   } else {
-    file { "$home/conf/wrapper.conf": source => "$installdir/conf/wrapper.conf" }
+    file { "${home}/conf/wrapper.conf":
+      ensure  => link,
+      target  => "${installdir}/conf/wrapper.conf",
+    }
   }
   if $version == "1.4-M2" {
     exec { "fix_tmpdir_14M2":

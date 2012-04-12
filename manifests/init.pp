@@ -47,7 +47,8 @@ class archiva($version, $user = "archiva", $group = "archiva",
     username => "sa",
     password => "",
   },
-  $jdbc_driver_url = "") {
+  $jdbc_driver_url = "",
+  $maxmemory = undef) {
 
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
@@ -169,7 +170,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
       notify => Service[$service],
       require => File["$home/conf/wrapper.conf"],
     }
-  } 
+  }
   file { "$home":
     ensure => directory,
   } ->
@@ -213,4 +214,25 @@ class archiva($version, $user = "archiva", $group = "archiva",
     hasstatus => true,
     enable => true,
   }
+
+  if $maxmemory != undef {
+    # Until Augeas has the properties files fixes, use a custom version
+    # Just a basic approach - for more complete management of lenses consider https://github.com/camptocamp/puppet-augeas
+    file { "/tmp/augeas": ensure => directory }
+    file { "/tmp/augeas/archiva": ensure => directory } ->
+    wget::fetch { "fetch-augeas-archiva":
+      source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",
+      destination => "/tmp/augeas/archiva/properties.aug",
+    } ->
+
+    # Adjust wrapper.conf
+    augeas { "update-archiva-wrapper-config":
+      lens => "Properties.lns",
+      incl => "$home/conf/wrapper.conf",
+      changes => "set wrapper.java.maxmemory 512",
+      load_path => "/tmp/augeas/archiva",
+      require => File["${home}/conf/wrapper.conf"],
+    }
+  }
+
 }

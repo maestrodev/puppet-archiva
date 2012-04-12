@@ -229,7 +229,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
     augeas { "update-archiva-wrapper-config":
       lens => "Properties.lns",
       incl => "$home/conf/wrapper.conf",
-      changes => "set wrapper.java.maxmemory 512",
+      changes => "set wrapper.java.maxmemory $maxmemory",
       load_path => "/tmp/augeas/archiva",
       require => File["${home}/conf/wrapper.conf"],
     }

@@ -49,7 +49,8 @@ class archiva($version, $user = "archiva", $group = "archiva",
   },
   $jdbc_driver_url = "",
   $maxmemory = undef,
-  $jetty_version = undef) {
+  $jetty_version = undef,
+  $forwarded = false) {
 
   # wget from https://github.com/maestrodev/puppet-wget
   include wget

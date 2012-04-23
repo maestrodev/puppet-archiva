@@ -55,7 +55,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
 
-  if $jetty_version == {
+  if $jetty_version == undef {
     if $version =~ /(1.[23].*|1.4-M1.*)/ {
       $jetty_version_real = 6
     } else {

@@ -48,15 +48,21 @@ class archiva($version, $user = "archiva", $group = "archiva",
     password => "",
   },
   $jdbc_driver_url = "",
-  $maxmemory = undef) {
+  $maxmemory = undef,
+  $jetty_version = undef) {
 
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
 
-  if $version =~ /(1.[23].*|1.4-M1.*)/ {
-    $jetty_version = 6
-  } else {
-    $jetty_version = 7
+  if $jetty_version == {
+    if $version =~ /(1.[23].*|1.4-M1.*)/ {
+      $jetty_version_real = 6
+    } else {
+      $jetty_version_real = 7
+    }
+  }
+  else {
+    $jetty_version_real = $jetty_version
   }
 
   File { owner => $user, group => $group, mode => "0644" }
@@ -190,7 +196,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
   file { "$home/conf/shared.xml": ensure  => present, source => "$installdir/conf/shared.xml", } ->
   file { "$home/conf/jetty.xml": 
     ensure  => present,
-    content => template("archiva/jetty$jetty_version.xml.erb"),
+    content => template("archiva/jetty$jetty_version_real.xml.erb"),
     notify  => Service[$service],
   } ->
   file { "$home/conf/security.properties": 

@@ -84,17 +84,18 @@ class archiva($version, $user = "archiva", $group = "archiva",
   }
 
   if $manage_user {
-    if $::puppetversion >= "2.7.0" {
-      user { "$user":
+    # check for undef, so we don't have to explicitly define the fact in specs
+    if (($::puppetversion == undef) or ($::puppetversion >= "2.7.0")) {
+      user { $user:
         ensure     => present,
-        home       => "$home",
+        home       => $home,
         managehome => false,
         system     => true,
       }
     } else {
-      user { "$user":
+      user { $user:
         ensure     => present,
-        home       => "$home",
+        home       => $home,
         managehome => false,
       }
     }

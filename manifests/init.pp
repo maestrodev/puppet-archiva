@@ -226,7 +226,9 @@ class archiva($version, $user = "archiva", $group = "archiva",
   if $maxmemory != undef {
     # Until Augeas has the properties files fixes, use a custom version
     # Just a basic approach - for more complete management of lenses consider https://github.com/camptocamp/puppet-augeas
-    file { "/tmp/augeas": ensure => directory }
+    if !defined(File["/tmp/augeas"]) {
+      file { "/tmp/augeas": ensure => directory }
+    }
     file { "/tmp/augeas/archiva": ensure => directory } ->
     wget::fetch { "fetch-augeas-archiva":
       source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",

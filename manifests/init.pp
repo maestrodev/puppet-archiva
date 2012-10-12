@@ -35,6 +35,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
     #bind_password => "",
     #admin_user => "root",
   }, 
+  cookie_path = "",
   $archiva_jdbc = {
     url => "jdbc:derby:/var/local/archiva/data/databases/archiva;create=true",
     driver => "org.apache.derby.jdbc.EmbeddedDriver",

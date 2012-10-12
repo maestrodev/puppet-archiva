@@ -39,3 +39,8 @@ redback.default.admin=<%=ldap['admin_user']%>
 # LDAP anonymous bind config
 ldap.bind.authenticator.enabled=true
 <% end %>
+
+<%- if !cookie_path.empty? %>
+security.signon.path=<%=cookie_path%>
+security.rememberme.path=<%=cookie_path%>
+<%- end -%>

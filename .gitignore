@@ -2,3 +2,4 @@
 /pkg
 /metadata.json
 /.rvmrc
+/spec/fixtures/

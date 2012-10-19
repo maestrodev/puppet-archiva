@@ -36,6 +36,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
     #admin_user => "root",
   }, 
   $cookie_path = "",
+  $max_upload_size = undef,
   $archiva_jdbc = {
     url => "jdbc:derby:/var/local/archiva/data/databases/archiva;create=true",
     driver => "org.apache.derby.jdbc.EmbeddedDriver",
@@ -223,7 +224,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
     enable => true,
   }
 
-  if $maxmemory != undef {
+  if $maxmemory != undef or $max_upload_size != undef {
     # Until Augeas has the properties files fixes, use a custom version
     # Just a basic approach - for more complete management of lenses consider https://github.com/camptocamp/puppet-augeas
     if !defined(File["/tmp/augeas"]) {
@@ -233,16 +234,28 @@ class archiva($version, $user = "archiva", $group = "archiva",
     wget::fetch { "fetch-augeas-archiva":
       source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",
       destination => "/tmp/augeas/archiva/properties.aug",
-    } ->
+    }
+  }
 
+  if $maxmemory != undef {
     # Adjust wrapper.conf
     augeas { "update-archiva-wrapper-config":
       lens => "Properties.lns",
       incl => "$home/conf/wrapper.conf",
       changes => "set wrapper.java.maxmemory $maxmemory",
       load_path => "/tmp/augeas/archiva",
-      require => File["${home}/conf/wrapper.conf"],
+      require => [File["${home}/conf/wrapper.conf"], Wget::Fetch["fetch-augeas-archiva"]]
     }
   }
 
+  if $max_upload_size != undef {
+    # Adjust wrapper.conf
+    augeas { "set-upload-size":
+      lens => "Properties.lns",
+      incl => "$installdir/apps/archiva/WEB-INF/classes/struts.properties",
+      changes => "set struts.multipart.maxSize $max_upload_size",
+      load_path => "/tmp/augeas/archiva",
+      require => [Exec["archiva_untar"], Wget::Fetch["fetch-augeas-archiva"]]
+    }
+  }
 }

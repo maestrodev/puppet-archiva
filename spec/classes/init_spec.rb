@@ -1,7 +1,8 @@
 require "#{File.join(File.dirname(__FILE__),'..','spec_helper')}"
 
+ARCHIVA_VERSION = "1.3.5"
 DEFAULT_PARAMS = {
-  :version => "1.3.5"
+  :version => ARCHIVA_VERSION
 }
 
 describe 'archiva' do
@@ -9,7 +10,7 @@ describe 'archiva' do
 
   context "when downloading archiva" do
     it do should contain_wget__fetch('archiva_download').with(
-        'source'      => 'http://archive.apache.org/dist/archiva/binaries/apache-archiva-1.3.5-bin.tar.gz',
+        'source'      => "http://archive.apache.org/dist/archiva/binaries/apache-archiva-#{ARCHIVA_VERSION}-bin.tar.gz",
         'user'        => nil,
         'password'    => nil
     ) 
@@ -24,8 +25,7 @@ describe 'archiva' do
 
     it 'should fetch archiva from repo' do
       should contain_wget__fetch('archiva_download').with(
-        'source'      =>
-'http://repo1.maven.org/maven2/org/apache/archiva/archiva-jetty/1.3.5/archiva-jetty-1.3.5-bin.tar.gz',
+        'source'      => "http://repo1.maven.org/maven2/org/apache/archiva/archiva-jetty/#{ARCHIVA_VERSION}/archiva-jetty-#{ARCHIVA_VERSION}-bin.tar.gz",
         'user'        => nil,
         'password'    => nil)
     end
@@ -41,7 +41,7 @@ describe 'archiva' do
 
     it 'should fetch archiva with username and password' do
       should contain_wget__authfetch('archiva_download').with(
-        'source'      => 'http://repo1.maven.org/maven2/org/apache/archiva/archiva-jetty/1.3.5/archiva-jetty-1.3.5-bin.tar.gz',
+        'source'      => "http://repo1.maven.org/maven2/org/apache/archiva/archiva-jetty/#{ARCHIVA_VERSION}/archiva-jetty-#{ARCHIVA_VERSION}-bin.tar.gz",
         'user'        => 'u',
         'password'    => 'p')
     end
@@ -67,5 +67,15 @@ describe 'archiva' do
       content.should_not =~ %r[security\.signon\.path]
       content.should_not =~ %r[security\.rememberme\.path]
     end
+  end
+
+  context "when upload size is set" do
+    let(:params) { { :max_upload_size => 10485760 }.merge DEFAULT_PARAMS }
+
+    it { should contain_augeas('set-upload-size') }
+  end
+
+  context "when upload size is not set" do
+    it { should_not contain_augeas('set-upload-size') }
   end
 end

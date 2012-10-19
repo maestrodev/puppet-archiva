@@ -244,7 +244,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
       incl => "$home/conf/wrapper.conf",
       changes => "set wrapper.java.maxmemory $maxmemory",
       load_path => "/tmp/augeas/archiva",
-      require => [File["${home}/conf/wrapper.conf"], Wget::Fetch["fetch-augeas-archiva"]]
+      require => [File["${home}/conf/wrapper.conf"], Wget::Fetch["fetch-augeas-archiva"]],
       notify => Service[$service],
     }
   }
@@ -255,7 +255,7 @@ class archiva($version, $user = "archiva", $group = "archiva",
       incl => "$installdir/apps/archiva/WEB-INF/classes/struts.properties",
       changes => "set struts.multipart.maxSize $max_upload_size",
       load_path => "/tmp/augeas/archiva",
-      require => [Exec["archiva_untar"], Wget::Fetch["fetch-augeas-archiva"]]
+      require => [Exec["archiva_untar"], Wget::Fetch["fetch-augeas-archiva"]],
       notify => Service[$service],
     }
   }

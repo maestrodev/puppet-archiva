@@ -47,6 +47,15 @@ describe 'archiva' do
     end
   end
 
+  
+
+  context 'when application URL is not set' do    
+    it 'should set the HOME variable correctly in the startup script' do
+      should contain_file('/var/local/archiva/conf/security.properties').with_content =~ %r[application\\.url = http://localhost:8080/archiva/]
+    end
+  end
+  
+
   context 'when application URL is set' do
     let(:params) { { :application_url => 'http://someurl/' }.merge DEFAULT_PARAMS }
     

@@ -13,6 +13,7 @@
 # [home] the user home.
 # [apache_mirror] the base URL of the Apache mirror site.
 # [repo] a hash containing parameters for the repository where the distribution might be found. url, username, password.
+# [application_url] the URL where the application can be reached.
 # [port] the port Archiva should be listening on.
 # [mail_from] a hash email configuration. Should contain name and address parameters.
 # [ldap] a hash containing LDAP configuration. May contain hostname, ssl, port, dn. bind_dn, bind_password, admin_user.
@@ -53,7 +54,7 @@
 #
 # === Copyright
 #
-# Copyright 20112 Maestrodev
+# Copyright 2012 Maestrodev
 #
 class archiva(
   $version,
@@ -65,7 +66,8 @@ class archiva(
   $home = $archiva::params::home,
   $apache_mirror = $archiva::params::apache_mirror,
   $repo = $archiva::params::repo,
-  $port = $archiva::params::port,
+  $application_url = $archiva::params::application_url,
+  $port = $archiva::params::port,  
   $mail_from = $archiva::params::mail_from,
   $ldap = $archiva::params::ldap,
   $cookie_path = $archiva::params::cookie_path,

@@ -1,6 +1,4 @@
 fixtures:
-  repositories:
-    wget: http://github.com/maestrodev/puppet-wget.git
   symlinks:
     archiva: "#{source_dir}"
 

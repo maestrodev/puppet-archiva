@@ -265,9 +265,8 @@ class archiva(
     file { '/tmp/augeas/archiva':
       ensure => directory
     } ->
-    wget::fetch { 'fetch-augeas-archiva':
-      source      => 'https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug',
-      destination => '/tmp/augeas/archiva/properties.aug',
+    file { "/tmp/augeas/archiva/properties.aug":
+      source => "puppet://modules/archiva/properties.aug"
     }
   }
 

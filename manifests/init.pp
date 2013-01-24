@@ -266,7 +266,7 @@ class archiva(
       ensure => directory
     } ->
     file { "/tmp/augeas/archiva/properties.aug":
-      source => "puppet://modules/archiva/properties.aug"
+      source => "puppet:///modules/archiva/properties.aug"
     }
   }
 

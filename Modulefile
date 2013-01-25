@@ -1,5 +1,5 @@
 name 'maestrodev-archiva'
-version '1.1.0'
+version '1.0.1'
 
 author 'maestrodev'
 license 'Apache License, Version 2.0'

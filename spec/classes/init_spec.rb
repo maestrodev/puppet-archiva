@@ -47,11 +47,39 @@ describe 'archiva' do
     end
   end
 
-  
+  jetty_config_file = '/var/local/archiva/conf/jetty.xml'
+  context "with default version" do
+    it "should configure the archiva JDBC connection" do
+      content = catalogue.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should =~ %r[jdbc/archiva]
+      content.should_not =~ %r[org\.eclipse]
+    end
+  end
 
+  context "with 1.4-M1" do
+    let(:params) { { :version => "1.4-M1" } }
+    it "should configure the archiva JDBC connection" do
+      content = catalogue.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should_not =~ %r[jdbc/archiva]
+      content.should_not =~ %r[org\.eclipse]
+    end
+  end
+
+  context "with recent version" do
+    let(:params) { { :version => "1.4-M3" } }
+    it "should not configure the archiva JDBC connection" do
+      should contain_file(jetty_config_file)
+      content = catalogue.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should_not =~ %r[jdbc/archiva]
+      content.should =~ %r[org\.eclipse]
+    end
+  end
+
+  security_config_file = '/var/local/archiva/conf/security.properties'
   context 'when application URL is not set' do    
     it 'should set the HOME variable correctly in the startup script' do
-      should contain_file('/var/local/archiva/conf/security.properties').with_content =~ %r[application\\.url = http://localhost:8080/archiva/]
+      content = catalogue.resource('file', security_config_file).send(:parameters)[:content]
+      content.should =~ %r[application\.url = http://localhost:8080/archiva/]
     end
   end
   
@@ -60,7 +88,8 @@ describe 'archiva' do
     let(:params) { { :application_url => 'http://someurl/' }.merge DEFAULT_PARAMS }
     
     it 'should set the HOME variable correctly in the startup script' do
-      should contain_file('/var/local/archiva/conf/security.properties').with_content =~ %r[application\\.url = http://someurl/]
+      content = catalogue.resource('file', security_config_file).send(:parameters)[:content]
+      content.should =~ %r[application\.url = http://someurl/]
     end
   end
 

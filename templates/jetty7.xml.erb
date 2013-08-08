@@ -62,11 +62,11 @@
       <Arg>
           <New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
             <Set name="host"><SystemProperty name="jetty.host"/></Set>
-            <Set name="port"><SystemProperty name="jetty.port" default="<%= port %>"/></Set>
+            <Set name="port"><SystemProperty name="jetty.port" default="<%= @port %>"/></Set>
             <Set name="maxIdleTime">30000</Set>
             <Set name="Acceptors">2</Set>
             <Set name="statsOn">false</Set>
-<% if has_variable?("forwarded") and forwarded %>
+<% if has_variable?("forwarded") and @forwarded %>
             <Set name="forwarded">true</Set>
 <% end %>
             <Set name="confidentialPort">8443</Set>
@@ -296,23 +296,23 @@
     <Arg>jdbc/users</Arg>
     <Arg>
       <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= users_jdbc['driver'] %></Set>
-        <Set name="url"><%= users_jdbc['url'] %></Set>
-        <Set name="username"><%= users_jdbc['username'] %></Set>
-        <Set name="password"><%= users_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
+        <Set name="url"><%= @users_jdbc['url'] %></Set>
+        <Set name="username"><%= @users_jdbc['username'] %></Set>
+        <Set name="password"><%= @users_jdbc['password'] %></Set>
       </New>
     </Arg>
   </New>
 
-<% if users_jdbc['shutdown_url'] and !users_jdbc['shutdown_url'].empty? %>
+<% if @users_jdbc['shutdown_url'] and !@users_jdbc['shutdown_url'].empty? %>
   <New id="usersShutdown" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
       <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= users_jdbc['driver'] %></Set>
-        <Set name="url"><%= users_jdbc['shutdown_url'] %></Set>
-        <Set name="username"><%= users_jdbc['username'] %></Set>
-        <Set name="password"><%= users_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
+        <Set name="url"><%= @users_jdbc['shutdown_url'] %></Set>
+        <Set name="username"><%= @users_jdbc['username'] %></Set>
+        <Set name="password"><%= @users_jdbc['password'] %></Set>
       </New>
     </Arg>
   </New>

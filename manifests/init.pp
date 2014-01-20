@@ -150,8 +150,13 @@ class archiva(
       }
     }
   } else {
+    if versioncmp($version, '1.3.5') >= 0 and $version != '1.4-M1' {
+      $mirror_url = "${apache_mirror}/archiva/${version}/binaries/apache-archiva-${version}-bin.tar.gz"
+    } else {
+      $mirror_url = "${apache_mirror}/archiva/binaries/apache-archiva-${version}-bin.tar.gz"
+    }
     wget::fetch { 'archiva_download':
-      source      => "${apache_mirror}/archiva/binaries/apache-archiva-${version}-bin.tar.gz",
+      source      => $mirror_url,
       destination => $archive,
       notify      => Exec['archiva_untar'],
     }

@@ -8,9 +8,57 @@ DEFAULT_PARAMS = {
 describe 'archiva' do
   let (:params) { DEFAULT_PARAMS }
 
-  context "when downloading archiva" do
+  context "when downloading archiva from 1.3.5 onwards" do
+    let(:params) { { :version => "1.3.5" } }
+
     it do should contain_wget__fetch('archiva_download').with(
-        'source'      => "http://archive.apache.org/dist/archiva/binaries/apache-archiva-#{ARCHIVA_VERSION}-bin.tar.gz",
+        'source'      => "http://archive.apache.org/dist/archiva/1.3.5/binaries/apache-archiva-1.3.5-bin.tar.gz",
+        'user'        => nil,
+        'password'    => nil
+    ) 
+    end
+  end
+
+  context "when downloading archiva from new version" do
+    let(:params) { { :version => "2.0.0" } }
+
+    it do should contain_wget__fetch('archiva_download').with(
+        'source'      => "http://archive.apache.org/dist/archiva/2.0.0/binaries/apache-archiva-2.0.0-bin.tar.gz",
+        'user'        => nil,
+        'password'    => nil
+    ) 
+    end
+  end
+
+  context "when downloading archiva from a mirror" do
+    let(:params) { {
+      :apache_mirror => "http://mirror.internode.on.net/pub/apache"
+    }.merge DEFAULT_PARAMS }
+
+    it do should contain_wget__fetch('archiva_download').with(
+        'source'      => "http://mirror.internode.on.net/pub/apache/archiva/#{ARCHIVA_VERSION}/binaries/apache-archiva-#{ARCHIVA_VERSION}-bin.tar.gz",
+        'user'        => nil,
+        'password'    => nil
+    ) 
+    end
+  end
+
+  context "when downloading archiva from an old version" do
+    let(:params) { { :version => "1.3.4" } }
+
+    it do should contain_wget__fetch('archiva_download').with(
+        'source'      => "http://archive.apache.org/dist/archiva/binaries/apache-archiva-1.3.4-bin.tar.gz",
+        'user'        => nil,
+        'password'    => nil
+    ) 
+    end
+  end
+
+  context "when downloading archiva from 1.4-M1 version" do
+    let(:params) { { :version => "1.4-M1" } }
+
+    it do should contain_wget__fetch('archiva_download').with(
+        'source'      => "http://archive.apache.org/dist/archiva/binaries/apache-archiva-1.4-M1-bin.tar.gz",
         'user'        => nil,
         'password'    => nil
     ) 

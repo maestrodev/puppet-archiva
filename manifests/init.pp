@@ -57,7 +57,7 @@
 # Copyright 2012 Maestrodev
 #
 class archiva(
-  $version,
+  $version = $archiva::params::version,
   $user = $archiva::params::user,
   $group = $archiva::params::group,
   $manage_user = $archiva::params::manage_user,

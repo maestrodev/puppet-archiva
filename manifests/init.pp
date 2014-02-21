@@ -19,7 +19,7 @@
 # [ldap] a hash containing LDAP configuration. May contain hostname, ssl, port, dn. bind_dn, bind_password, admin_user.
 # [cookie_path] the security cookie path
 # [max_upload_size] the maximum upload size
-# [archiva_jdbc] a hash containing JDBC parameters for the archiva DB. Should contain url, driver, username, password.
+# [archiva_jdbc] a hash containing JDBC parameters for the archiva DB. Not used in newer versions of Archiva. Should contain url, driver, username, password.
 # [users_jdbc] a hash containing JDBC parameters for the users DB. Should contain url, driver, username, password.
 # [jdbc_driver_url] the URL where the JDBC driver can be found and downloaded from.
 # [maxmemory] the maximum memory server configuration.
@@ -83,10 +83,11 @@ class archiva(
   include wget
 
   if $jetty_version == undef {
-    if $version =~ /^(1.[23].*|1.4-M1)$/ {
-      $jetty_version_real = 6
-    } else {
-      $jetty_version_real = 7
+    $jetty_version_real = $version ? {
+      /^(1\.[23]|1\.4-M1)/ => 6,
+      /^1\.4/              => 7,
+      /^2\.0/              => 8,
+      default              => 8,
     }
   }
   else {

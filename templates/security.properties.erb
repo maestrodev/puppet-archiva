@@ -34,6 +34,9 @@ ldap.config.mapper.attribute.fullname=cn
 
 # uid of the ldap user 
 redback.default.admin=<%=@ldap['admin_user']%>
+<% if @ldap['guest_user'] -%>
+redback.default.guest=<%=@ldap['guest_user']%>
+<% end -%>
 # ldap.config.mapper.attribute.user.base.dn=
 
 # LDAP anonymous bind config

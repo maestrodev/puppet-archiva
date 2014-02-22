@@ -42,7 +42,8 @@
 #   dn            => 'o=example',
 #   bind_dn       => "cn=admin,ou=system,o=example",
 #   bind_password => "admin123",
-#   admin_user    => "sysadmin"
+#   admin_user    => "sysadmin",
+#   guest_user    => "guest"
 # }
 #
 # class { archiva:

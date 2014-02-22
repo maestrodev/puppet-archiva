@@ -4,43 +4,23 @@ describe 'archiva' do
   let(:version) { "1.3.5" }
   let(:params) {{ :version => version }}
   let(:jetty_config_file) { '/var/local/archiva/conf/jetty.xml' }
+  let(:security_config_file) { '/var/local/archiva/conf/security.properties' }
 
-  context "when downloading archiva from 1.3.5 onwards", :compile do
-    let(:version) { "1.3.5" }
-
+  context "when installing default version 1.3.5", :compile do
     it do should contain_wget__fetch('archiva_download').with(
         'source'      => "http://archive.apache.org/dist/archiva/1.3.5/binaries/apache-archiva-1.3.5-bin.tar.gz",
         'user'        => nil,
         'password'    => nil
     ) 
     end
-  end
-
-  context "when downloading archiva from new version", :compile do
-    let(:version) { "2.0.0" }
-
-    it do should contain_wget__fetch('archiva_download').with(
-        'source'      => "http://archive.apache.org/dist/archiva/2.0.0/binaries/apache-archiva-2.0.0-bin.tar.gz",
-        'user'        => nil,
-        'password'    => nil
-    ) 
+    it "should configure the archiva JDBC connection" do
+      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should =~ %r[jdbc/archiva]
+      content.should_not =~ %r[org\.eclipse]
     end
   end
 
-  context "when downloading archiva from a mirror", :compile do
-    let(:params) { super().merge({
-      :apache_mirror => "http://mirror.internode.on.net/pub/apache"
-    }) }
-
-    it do should contain_wget__fetch('archiva_download').with(
-        'source'      => "http://mirror.internode.on.net/pub/apache/archiva/#{version}/binaries/apache-archiva-#{version}-bin.tar.gz",
-        'user'        => nil,
-        'password'    => nil
-    ) 
-    end
-  end
-
-  context "when downloading archiva from an old version", :compile do
+  context "when installing version 1.3.4", :compile do
     let(:version) { "1.3.4" }
 
     it do should contain_wget__fetch('archiva_download').with(
@@ -51,11 +31,54 @@ describe 'archiva' do
     end
   end
 
-  context "when downloading archiva from 1.4-M1 version", :compile do
+  context "when installing version 1.4-M1", :compile do
     let(:version) { "1.4-M1" }
 
     it do should contain_wget__fetch('archiva_download').with(
         'source'      => "http://archive.apache.org/dist/archiva/binaries/apache-archiva-1.4-M1-bin.tar.gz",
+        'user'        => nil,
+        'password'    => nil
+    ) 
+    end
+
+    it "should configure the archiva JDBC connection" do
+      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should_not =~ %r[jdbc/archiva]
+      content.should_not =~ %r[org\.eclipse]
+    end
+  end
+
+  context "when installing version 1.4-M3", :compile do
+    let(:version) { "1.4-M3" }
+    it "should not configure the archiva JDBC connection" do
+      should contain_file(jetty_config_file)
+      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should_not =~ %r[jdbc/archiva]
+      content.should =~ %r[org\.eclipse]
+    end
+  end
+
+
+  context "when installing version 2.0.0", :compile do
+    let(:version) { "2.0.0" }
+
+    it do should contain_wget__fetch('archiva_download').with(
+        'source'      => "http://archive.apache.org/dist/archiva/2.0.0/binaries/apache-archiva-2.0.0-bin.tar.gz",
+        'user'        => nil,
+        'password'    => nil
+    )
+    end
+
+    it { should contain_file('/var/local/archiva/conf/jetty.xml').with_content(/org.apache.tomcat.jdbc.pool.DataSource/) }
+  end
+
+  context "when downloading archiva from a mirror", :compile do
+    let(:params) { super().merge({
+      :apache_mirror => "http://mirror.internode.on.net/pub/apache"
+    }) }
+
+    it do should contain_wget__fetch('archiva_download').with(
+        'source'      => "http://mirror.internode.on.net/pub/apache/archiva/#{version}/binaries/apache-archiva-#{version}-bin.tar.gz",
         'user'        => nil,
         'password'    => nil
     ) 
@@ -92,34 +115,6 @@ describe 'archiva' do
     end
   end
 
-  context "with default version", :compile do
-    it "should configure the archiva JDBC connection" do
-      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
-      content.should =~ %r[jdbc/archiva]
-      content.should_not =~ %r[org\.eclipse]
-    end
-  end
-
-  context "with 1.4-M1", :compile do
-    let(:version) { "1.4-M1" }
-    it "should configure the archiva JDBC connection" do
-      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
-      content.should_not =~ %r[jdbc/archiva]
-      content.should_not =~ %r[org\.eclipse]
-    end
-  end
-
-  context "with recent version", :compile do
-    let(:version) { "1.4-M3" }
-    it "should not configure the archiva JDBC connection" do
-      should contain_file(jetty_config_file)
-      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
-      content.should_not =~ %r[jdbc/archiva]
-      content.should =~ %r[org\.eclipse]
-    end
-  end
-
-  security_config_file = '/var/local/archiva/conf/security.properties'
   context 'when application URL is not set', :compile do    
     it 'should set the HOME variable correctly in the startup script' do
       content = subject.resource('file', security_config_file).send(:parameters)[:content]

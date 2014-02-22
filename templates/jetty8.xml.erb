@@ -298,7 +298,9 @@
         <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
         <Set name="url"><%= @users_jdbc['url'] %></Set>
         <Set name="username"><%= @users_jdbc['username'] %></Set>
+        <% unless @users_jdbc['password'].empty? -%>
         <Set name="password"><%= @users_jdbc['password'] %></Set>
+        <% end -%>
         <Set name="maxActive">20</Set>
         <Set name="removeAbandoned">true</Set>
         <Set name="logAbandoned">true</Set>
@@ -318,7 +320,9 @@
         <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
         <Set name="url"><%= @users_jdbc['shutdown_url'] %></Set>
         <Set name="username"><%= @users_jdbc['username'] %></Set>
+        <% unless @users_jdbc['password'].empty? -%>
         <Set name="password"><%= @users_jdbc['password'] %></Set>
+        <% end -%>
       </New>
     </Arg>
   </New>

@@ -173,7 +173,7 @@ class archiva(
     ensure  => link,
     target  => $installdir,
   }
-  if $::architecture == 'x86_64' {
+  if $::architecture == 'x86_64' or $::architecture == 'amd64' {
     file { "${installdir}/bin/wrapper-linux-x86-32":
       ensure  => absent,
       require => Exec['archiva_untar'],

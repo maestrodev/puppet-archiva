@@ -261,30 +261,13 @@ class archiva(
     enable     => true,
   }
 
-  if $maxmemory != undef or $max_upload_size != undef {
-    # Until Augeas has the properties files fixes, use a custom version
-    # Just a basic approach - for more complete management of lenses consider https://github.com/camptocamp/puppet-augeas
-    if !defined(File['/tmp/augeas']) {
-      file { '/tmp/augeas':
-        ensure => directory
-      }
-    }
-    file { '/tmp/augeas/archiva':
-      ensure => directory
-    } ->
-    file { "/tmp/augeas/archiva/properties.aug":
-      source => "puppet:///modules/archiva/properties.aug"
-    }
-  }
-
   if $maxmemory != undef {
     # Adjust wrapper.conf
     augeas { 'update-archiva-wrapper-config':
       lens      => 'Properties.lns',
       incl      => "${home}/conf/wrapper.conf",
       changes   => "set wrapper.java.maxmemory ${maxmemory}",
-      load_path => '/tmp/augeas/archiva',
-      require   => [File["${home}/conf/wrapper.conf"], File['/tmp/augeas/archiva/properties.aug']],
+      require   => [File["${home}/conf/wrapper.conf"]],
       notify    => Service[$service],
     }
   }
@@ -294,8 +277,7 @@ class archiva(
       lens      => 'Properties.lns',
       incl      => "${installdir}/apps/archiva/WEB-INF/classes/struts.properties",
       changes   => "set struts.multipart.maxSize ${max_upload_size}",
-      load_path => '/tmp/augeas/archiva',
-      require   => [Exec['archiva_untar'], File['/tmp/augeas/archiva/properties.aug']],
+      require   => [Exec['archiva_untar']],
       notify    => Service[$service],
     }
   }

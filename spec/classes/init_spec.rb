@@ -108,7 +108,7 @@ describe 'archiva' do
     }) }
 
     it 'should fetch archiva with username and password' do
-      should contain_wget__authfetch('archiva_download').with(
+      should contain_wget__fetch('archiva_download').with(
         'source'      => "http://repo1.maven.org/maven2/org/apache/archiva/archiva-jetty/#{version}/archiva-jetty-#{version}-bin.tar.gz",
         'user'        => 'u',
         'password'    => 'p')

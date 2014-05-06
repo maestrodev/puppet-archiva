@@ -136,20 +136,12 @@ class archiva(
     }
   }
   if "${repo['url']}" != '' {
-    if "${repo['username']}" != '' {
-      wget::authfetch { 'archiva_download':
-        source      => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
-        destination => $archive,
-        user        => $repo['username'],
-        password    => $repo['password'],
-        notify      => Exec['archiva_untar'],
-      }
-    } else {
-      wget::fetch { 'archiva_download':
-        source      => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
-        destination => $archive,
-        notify      => Exec['archiva_untar'],
-      }
+    wget::fetch { 'archiva_download':
+      source      => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
+      destination => $archive,
+      user        => $repo['username'] ? { '' => undef, default => $repo['username'] },
+      password    => $repo['password'] ? { '' => undef, default => $repo['password'] },
+      notify      => Exec['archiva_untar'],
     }
   } else {
     if versioncmp($version, '1.3.5') >= 0 and $version != '1.4-M1' {

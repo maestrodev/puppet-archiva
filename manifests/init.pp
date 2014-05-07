@@ -273,4 +273,19 @@ class archiva(
       notify    => Service[$service],
     }
   }
+
+  # in some versions wrapper has: set.ARCHIVA_BASE=.
+  # should be: set.default.ARCHIVA_BASE=.
+  augeas { 'fix-archiva-base':
+    lens      => 'Properties.lns',
+    incl      => "${home}/conf/wrapper.conf",
+    changes   => [
+      "rm set.ARCHIVA_BASE",
+      "set set.default.ARCHIVA_BASE .",
+    ],
+    onlyif    => 'match set.ARCHIVA_BASE size > 0',
+    require   => [File["${home}/conf/wrapper.conf"]],
+    notify    => Service[$service],
+  }
+
 }

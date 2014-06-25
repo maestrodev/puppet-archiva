@@ -99,7 +99,8 @@ class archiva(
 
   Exec { path => '/bin' }
 
-  $installdir = "${installroot}/apache-archiva-${version}"
+  $baseversion = snapshotbaseversion($version)
+  $installdir = "${installroot}/apache-archiva-${baseversion}"
   $archive = "/usr/local/src/apache-archiva-${version}-bin.tar.gz"
 
   # Derby specifics
@@ -137,7 +138,7 @@ class archiva(
   }
   if "${repo['url']}" != '' {
     wget::fetch { 'archiva_download':
-      source      => "${repo['url']}/org/apache/archiva/archiva-jetty/$version/archiva-jetty-${version}-bin.tar.gz",
+      source      => "${repo['url']}/org/apache/archiva/archiva-jetty/$baseversion/archiva-jetty-${version}-bin.tar.gz",
       destination => $archive,
       user        => $repo['username'] ? { '' => undef, default => $repo['username'] },
       password    => $repo['password'] ? { '' => undef, default => $repo['password'] },

@@ -9,3 +9,4 @@ summary 'Apache Archiva module for Puppet'
 description 'A Puppet module to install and configure Apache Archiva'
 
 dependency 'maestrodev/wget', '>=1.3.0'
+dependency 'maestrodev/maven', '>=0.0.2'

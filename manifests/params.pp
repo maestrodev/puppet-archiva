@@ -7,7 +7,7 @@
 # Copyright 2012 Maestrodev
 #
 class archiva::params(
-  $version = '1.3.5',
+  $version = '2.1.1',
   $user = 'archiva',
   $group = 'archiva',
   $manage_user = true,

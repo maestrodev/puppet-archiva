@@ -1,23 +1,19 @@
 require 'spec_helper'
 
 describe 'archiva' do
-  let(:version) { "1.3.5" }
+  let(:version) { '2.1.1' }
   let(:params) {{ :version => version }}
   let(:jetty_config_file) { '/var/local/archiva/conf/jetty.xml' }
   let(:security_config_file) { '/var/local/archiva/conf/security.properties' }
 
-  context "when installing default version 1.3.5", :compile do
+  context "when installing default version 2.1.1", :compile do
     it do should contain_wget__fetch('archiva_download').with(
-        'source'      => "http://archive.apache.org/dist/archiva/1.3.5/binaries/apache-archiva-1.3.5-bin.tar.gz",
+        'source'      => "http://archive.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1-bin.tar.gz",
         'user'        => nil,
         'password'    => nil
     ) 
     end
-    it "should configure the archiva JDBC connection" do
-      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
-      content.should =~ %r[jdbc/archiva]
-      content.should_not =~ %r[org\.eclipse]
-    end
+    it { should contain_file('/var/local/archiva/conf/jetty.xml').with_content(/org.apache.tomcat.jdbc.pool.DataSource/) }
   end
 
   context "when installing version 1.3.4", :compile do
@@ -28,6 +24,12 @@ describe 'archiva' do
         'user'        => nil,
         'password'    => nil
     ) 
+    end
+
+    it "should configure the archiva JDBC connection" do
+      content = subject.resource('file', jetty_config_file).send(:parameters)[:content]
+      content.should =~ %r[jdbc/archiva]
+      content.should_not =~ %r[org\.eclipse]
     end
   end
 

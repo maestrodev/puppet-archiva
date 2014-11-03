@@ -1,8 +1,11 @@
 FORGE
-  remote: http://forge.puppetlabs.com
+  remote: https://forgeapi.puppetlabs.com
   specs:
-    maestrodev/wget (1.4.1)
+    maestrodev-maven (1.2.1)
+      maestrodev-wget (>= 1.0.0)
+    maestrodev-wget (1.4.1)
 
 DEPENDENCIES
-  maestrodev/wget (>= 1.3.0)
+  maestrodev-maven (>= 1.0.0)
+  maestrodev-wget (>= 1.3.0)
 

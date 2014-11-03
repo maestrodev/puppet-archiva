@@ -69,7 +69,7 @@ class archiva(
   $apache_mirror = $archiva::params::apache_mirror,
   $repo = $archiva::params::repo,
   $application_url = $archiva::params::application_url,
-  $port = $archiva::params::port,  
+  $port = $archiva::params::port,
   $mail_from = $archiva::params::mail_from,
   $ldap = $archiva::params::ldap,
   $cookie_path = $archiva::params::cookie_path,
@@ -139,7 +139,7 @@ class archiva(
   }
   if "${repo['url']}" != '' {
     wget::fetch { 'archiva_download':
-      source      => "${repo['url']}/org/apache/archiva/archiva-jetty/$baseversion/archiva-jetty-${version}-bin.tar.gz",
+      source      => "${repo['url']}/org/apache/archiva/archiva-jetty/${baseversion}/archiva-jetty-${version}-bin.tar.gz",
       destination => $archive,
       user        => $repo['username'] ? { '' => undef, default => $repo['username'] },
       password    => $repo['password'] ? { '' => undef, default => $repo['password'] },
@@ -164,8 +164,8 @@ class archiva(
     notify  => Service[$service],
   } ->
   file { "${installroot}/${service}":
-    ensure  => link,
-    target  => $installdir,
+    ensure => link,
+    target => $installdir,
   }
   if $::architecture == 'x86_64' or $::architecture == 'amd64' {
     file { "${installdir}/bin/wrapper-linux-x86-32":
@@ -195,16 +195,16 @@ class archiva(
     }
   } else {
     file { "${home}/conf/wrapper.conf":
-      ensure  => link,
-      target  => "${installdir}/conf/wrapper.conf",
+      ensure => link,
+      target => "${installdir}/conf/wrapper.conf",
     }
   }
   if $version == '1.4-M2' {
     exec { 'fix_tmpdir_14M2':
       command => "sed -i 's#java.io.tmpdir=./temp#java.io.tmpdir=%ARCHIVA_BASE%/tmp#' ${home}/conf/wrapper.conf",
-      unless  => "grep 'java.io.tmpdir=%ARCHIVA_BASE%/tmp' $home/conf/wrapper.conf",
+      unless  => "grep 'java.io.tmpdir=%ARCHIVA_BASE%/tmp' ${home}/conf/wrapper.conf",
       notify  => Service[$service],
-      require => File["$home/conf/wrapper.conf"],
+      require => File["${home}/conf/wrapper.conf"],
     }
   }
 
@@ -258,36 +258,36 @@ class archiva(
   if $maxmemory != undef {
     # Adjust wrapper.conf
     augeas { 'update-archiva-wrapper-config':
-      lens      => 'Properties.lns',
-      incl      => "${home}/conf/wrapper.conf",
-      changes   => "set wrapper.java.maxmemory ${maxmemory}",
-      require   => [File["${home}/conf/wrapper.conf"]],
-      notify    => Service[$service],
+      lens    => 'Properties.lns',
+      incl    => "${home}/conf/wrapper.conf",
+      changes => "set wrapper.java.maxmemory ${maxmemory}",
+      require => [File["${home}/conf/wrapper.conf"]],
+      notify  => Service[$service],
     }
   }
 
   if $max_upload_size != undef {
     augeas { 'set-upload-size':
-      lens      => 'Properties.lns',
-      incl      => "${installdir}/apps/archiva/WEB-INF/classes/struts.properties",
-      changes   => "set struts.multipart.maxSize ${max_upload_size}",
-      require   => [Exec['archiva_untar']],
-      notify    => Service[$service],
+      lens    => 'Properties.lns',
+      incl    => "${installdir}/apps/archiva/WEB-INF/classes/struts.properties",
+      changes => "set struts.multipart.maxSize ${max_upload_size}",
+      require => [Exec['archiva_untar']],
+      notify  => Service[$service],
     }
   }
 
   # in some versions wrapper has: set.ARCHIVA_BASE=.
   # should be: set.default.ARCHIVA_BASE=.
   augeas { 'fix-archiva-base':
-    lens      => 'Properties.lns',
-    incl      => "${home}/conf/wrapper.conf",
-    changes   => [
-      "rm set.ARCHIVA_BASE",
-      "set set.default.ARCHIVA_BASE .",
+    lens    => 'Properties.lns',
+    incl    => "${home}/conf/wrapper.conf",
+    changes => [
+      'rm set.ARCHIVA_BASE',
+      'set set.default.ARCHIVA_BASE .',
     ],
-    onlyif    => 'match set.ARCHIVA_BASE size > 0',
-    require   => [File["${home}/conf/wrapper.conf"]],
-    notify    => Service[$service],
+    onlyif  => 'match set.ARCHIVA_BASE size > 0',
+    require => [File["${home}/conf/wrapper.conf"]],
+    notify  => Service[$service],
   }
 
 }

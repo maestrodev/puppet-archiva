@@ -63,6 +63,7 @@ class archiva(
   $group = $archiva::params::group,
   $manage_user = $archiva::params::manage_user,
   $service = $archiva::params::service,
+  $enable = $archiva::params::enable,
   $installroot = $archiva::params::installroot,
   $home = $archiva::params::home,
   $apache_mirror = $archiva::params::apache_mirror,
@@ -251,7 +252,7 @@ class archiva(
     ensure     => running,
     hasrestart => true,
     hasstatus  => true,
-    enable     => true,
+    enable     => $enable,
   }
 
   if $maxmemory != undef {

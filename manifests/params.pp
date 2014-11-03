@@ -12,6 +12,7 @@ class archiva::params(
   $group = 'archiva',
   $manage_user = true,
   $service = 'archiva',
+  $enable = true,
   $installroot = '/usr/local',
   $home = '/var/local/archiva',
   $apache_mirror = 'http://archive.apache.org/dist',

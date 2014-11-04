@@ -88,7 +88,7 @@ class archiva(
     $jetty_version_real = $version ? {
       /^(1\.[23]|1\.4-M1)/ => 6,
       /^1\.4/              => 7,
-      /^2\.0/              => 8,
+      /^2\./               => 8,
       default              => 8,
     }
   }

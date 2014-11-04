@@ -79,7 +79,8 @@ class archiva(
   $jdbc_driver_url = $archiva::params::jdbc_driver_url,
   $maxmemory = $archiva::params::maxmemory,
   $jetty_version = $archiva::params::jetty_version,
-  $forwarded = $archiva::params::forwarded) inherits archiva::params {
+  $forwarded = $archiva::params::forwarded,
+  $context_path = $archiva::params::context_path) inherits archiva::params {
 
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
@@ -271,6 +272,18 @@ class archiva(
       lens    => 'Properties.lns',
       incl    => "${installdir}/apps/archiva/WEB-INF/classes/struts.properties",
       changes => "set struts.multipart.maxSize ${max_upload_size}",
+      require => [Exec['archiva_untar']],
+      notify  => Service[$service],
+    }
+  }
+
+  if $context_path != undef {
+    augeas { 'set context_path':
+      incl    => "${installdir}/contexts/archiva.xml",
+      lens    => 'Xml.lns',
+      changes => [
+        "set Configure/Set[#attribute/name='contextPath']/#text ${context_path}",
+      ],
       require => [Exec['archiva_untar']],
       notify  => Service[$service],
     }

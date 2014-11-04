@@ -57,6 +57,7 @@ class archiva::params(
   $jdbc_driver_url = '',
   $maxmemory = undef,
   $jetty_version = undef,
-  $forwarded = false){
+  $forwarded = false,
+  $context_path = undef){
 
 }

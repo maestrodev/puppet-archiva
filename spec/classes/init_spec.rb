@@ -13,7 +13,8 @@ describe 'archiva' do
         'password'    => nil
     ) 
     end
-    it { should contain_file('/var/local/archiva/conf/jetty.xml').with_content(/org.apache.tomcat.jdbc.pool.DataSource/) }
+    it { should contain_file(jetty_config_file).with_content(/org.apache.tomcat.jdbc.pool.DataSource/) }
+    it { should contain_file(jetty_config_file).with_content(%r{<Set name="testOnBorrow">true</Set>}) }
   end
 
   context "when installing version 1.3.4", :compile do
@@ -71,7 +72,7 @@ describe 'archiva' do
     )
     end
 
-    it { should contain_file('/var/local/archiva/conf/jetty.xml').with_content(/org.apache.tomcat.jdbc.pool.DataSource/) }
+    it { should contain_file(jetty_config_file).with_content(/org.apache.tomcat.jdbc.pool.DataSource/) }
   end
 
   context "when downloading archiva from a mirror", :compile do
@@ -164,5 +165,23 @@ describe 'archiva' do
 
   context "when upload size is not set", :compile do
     it { should_not contain_augeas('set-upload-size') }
+  end
+
+  context "when customizing jdbc", :compile do
+
+    let(:database) {{
+      'url'          => 'jdbc:postgresql://localhost/archiva',
+      'driver'       => 'org.postgresql.Driver',
+      'username'     => 'archiva',
+      'password'     => 'archiva',
+      'testOnBorrow' => false,
+    }}
+    let(:params) {{ :users_jdbc => database }}
+
+    it { should contain_file(jetty_config_file).with_content(%r{<Set name="driverClassName">org.postgresql.Driver</Set>}) }
+    it { should contain_file(jetty_config_file).with_content(%r{<Set name="url">jdbc:postgresql://localhost/archiva</Set>}) }
+    it { should contain_file(jetty_config_file).with_content(%r{<Set name="username">archiva</Set>}) }
+    it { should contain_file(jetty_config_file).with_content(%r{<Set name="password">archiva</Set>}) }
+    it { should contain_file(jetty_config_file).with_content(%r{<Set name="testOnBorrow">true</Set>}) }
   end
 end

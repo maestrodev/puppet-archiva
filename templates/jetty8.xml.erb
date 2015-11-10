@@ -295,33 +295,33 @@
     <Arg>jdbc/users</Arg>
     <Arg>
       <New class="org.apache.tomcat.jdbc.pool.DataSource">
-        <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
-        <Set name="url"><%= @users_jdbc['url'] %></Set>
-        <Set name="username"><%= @users_jdbc['username'] %></Set>
-        <% unless @users_jdbc['password'].empty? -%>
-        <Set name="password"><%= @users_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @users_jdbc_new['driver'] %></Set>
+        <Set name="url"><%= @users_jdbc_new['url'] %></Set>
+        <Set name="username"><%= @users_jdbc_new['username'] %></Set>
+        <% unless @users_jdbc_new['password'].empty? -%>
+        <Set name="password"><%= @users_jdbc_new['password'] %></Set>
         <% end -%>
         <Set name="maxActive">20</Set>
         <Set name="removeAbandoned">true</Set>
         <Set name="logAbandoned">true</Set>
         <Set name="initialSize">5</Set>
-        <Set name="testOnBorrow"><%= @users_jdbc['testOnBorrow'] || 'true' %></Set>
+        <Set name="testOnBorrow"><%= @users_jdbc_new['testOnBorrow'] || 'true' %></Set>
         <!-- very rigourous sql query validation -->
         <Set name="validationQuery">select 1</Set>
       </New>
     </Arg>
   </New>
 
-<% if @users_jdbc['shutdown_url'] and !@users_jdbc['shutdown_url'].empty? -%>
+<% if @users_jdbc_new['shutdown_url'] and !@users_jdbc_new['shutdown_url'].empty? -%>
   <New id="usersShutdown" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
       <New class="org.apache.tomcat.jdbc.pool.DataSource">
-        <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
-        <Set name="url"><%= @users_jdbc['shutdown_url'] %></Set>
-        <Set name="username"><%= @users_jdbc['username'] %></Set>
-        <% unless @users_jdbc['password'].empty? -%>
-        <Set name="password"><%= @users_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @users_jdbc_new['driver'] %></Set>
+        <Set name="url"><%= @users_jdbc_new['shutdown_url'] %></Set>
+        <Set name="username"><%= @users_jdbc_new['username'] %></Set>
+        <% unless @users_jdbc_new['password'].empty? -%>
+        <Set name="password"><%= @users_jdbc_new['password'] %></Set>
         <% end -%>
       </New>
     </Arg>

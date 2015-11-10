@@ -108,12 +108,21 @@ class archiva(
   # Derby specifics
   if $archiva_jdbc['driver'] == 'org.apache.derby.jdbc.EmbeddedDriver' {
     $archiva_u = regsubst($archiva_jdbc['url'],';.*$', '')
-    $archiva_jdbc['shutdown_url'] = "${archiva_u};shutdown=true"
+    $archiva_jdbc_new = merge($archiva_jdbc,
+                        hash(['shutdown_url',"${archiva_u};shutdown=true"]))
+
+  }
+  else {
+    $archiva_jdbc_new = $archiva_jdbc
   }
 
   if $users_jdbc['driver'] == 'org.apache.derby.jdbc.EmbeddedDriver' {
     $users_u = regsubst($users_jdbc['url'], ';.*$', '')
-    $users_jdbc['shutdown_url'] = "${users_u};shutdown=true"
+    $users_jdbc_new = merge($users_jdbc,
+                        hash(['shutdown_url',"${users_u};shutdown=true"]))
+  }
+  else {
+    $users_jdbc_new = $users_jdbc
   }
 
   if $manage_user {

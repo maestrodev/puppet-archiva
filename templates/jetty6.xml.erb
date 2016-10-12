@@ -289,23 +289,23 @@
     <Arg>jdbc/archiva</Arg>
     <Arg>
       <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= @archiva_jdbc['driver'] %></Set>
-        <Set name="url"><%= @archiva_jdbc['url'] %></Set>
-        <Set name="username"><%= @archiva_jdbc['username'] %></Set>
-        <Set name="password"><%= @archiva_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @archiva_jdbc_new['driver'] %></Set>
+        <Set name="url"><%= @archiva_jdbc_new['url'] %></Set>
+        <Set name="username"><%= @archiva_jdbc_new['username'] %></Set>
+        <Set name="password"><%= @archiva_jdbc_new['password'] %></Set>
       </New>
     </Arg>
   </New>
 
-<% if @archiva_jdbc['shutdown_url'] and !@archiva_jdbc['shutdown_url'].empty? %>
+<% if @archiva_jdbc_new['shutdown_url'] and !@archiva_jdbc_new['shutdown_url'].empty? %>
   <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/archivaShutdown</Arg>
     <Arg>
       <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= @archiva_jdbc['driver'] %></Set>
-        <Set name="url"><%= @archiva_jdbc['shutdown_url'] %></Set>
-        <Set name="username"><%= @archiva_jdbc['username'] %></Set>
-        <Set name="password"><%= @archiva_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @archiva_jdbc_new['driver'] %></Set>
+        <Set name="url"><%= @archiva_jdbc_new['shutdown_url'] %></Set>
+        <Set name="username"><%= @archiva_jdbc_new['username'] %></Set>
+        <Set name="password"><%= @archiva_jdbc_new['password'] %></Set>
       </New>
     </Arg>
   </New>
@@ -318,23 +318,23 @@
     <Arg>jdbc/users</Arg>
     <Arg>
       <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
-        <Set name="url"><%= @users_jdbc['url'] %></Set>
-        <Set name="username"><%= @users_jdbc['username'] %></Set>
-        <Set name="password"><%= @users_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @users_jdbc_new['driver'] %></Set>
+        <Set name="url"><%= @users_jdbc_new['url'] %></Set>
+        <Set name="username"><%= @users_jdbc_new['username'] %></Set>
+        <Set name="password"><%= @users_jdbc_new['password'] %></Set>
       </New>
     </Arg>
   </New>
 
-<% if @users_jdbc['shutdown_url'] and !@users_jdbc['shutdown_url'].empty? %>
+<% if @users_jdbc_new['shutdown_url'] and !@users_jdbc_new['shutdown_url'].empty? %>
   <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
       <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= @users_jdbc['driver'] %></Set>
-        <Set name="url"><%= @users_jdbc['shutdown_url'] %></Set>
-        <Set name="username"><%= @users_jdbc['username'] %></Set>
-        <Set name="password"><%= @users_jdbc['password'] %></Set>
+        <Set name="driverClassName"><%= @users_jdbc_new['driver'] %></Set>
+        <Set name="url"><%= @users_jdbc_new['shutdown_url'] %></Set>
+        <Set name="username"><%= @users_jdbc_new['username'] %></Set>
+        <Set name="password"><%= @users_jdbc_new['password'] %></Set>
       </New>
     </Arg>
   </New>
